@@ -1,5 +1,7 @@
 # Rush-Royale-Bot
-Python based bot for Rush Royale
+Python based bot for Rush Royale.
+
+Reworked by Jimm
 
 Use with Bluestacks on PC
 
