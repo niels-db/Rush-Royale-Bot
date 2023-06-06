@@ -38,11 +38,9 @@ Install Latest Bluestacks 5
 
 Settings:
 
-(Display) Resolution: 1600 x 900
+(Display) Resolution: 900 x 1600  portrait mode. 
 
-(Graphics) Graphics engine mode: Compatibility (this can help if you have issues with scrcpy)
-
-(Advanced) Android Debug Bridge: Enabled - Note the port number here
+(Advanced) Android Debug Bridge: Enabled 
 
 Setup google account, download rush royale, ect.
 
@@ -52,4 +50,4 @@ run install.bat to create repo and install dependencies
 
 run lanch_gui.bat
 
-(temp) units and other settings have to be configured in bot_handler.py, this will be moved to the config.ini file.
+units have to be configured in config.ini file.
