@@ -16,7 +16,7 @@ class TextHandler(logging.StreamHandler):
         self.ansi_colors_light = [
             'dark gray', 'tomato', 'light green', 'light goldenrod', 'light blue', 'pink', 'light cyan', 'white'
         ]
-        # regular expressionto find ansi codes in string
+        # regular expression to find ansi codes in string
         self.ansi_regexp = re.compile(r"\x1b\[((\d+;)*\d+)m")
 
         self.textctrl.tag_configure('foreground default', foreground=self.textctrl["fg"])

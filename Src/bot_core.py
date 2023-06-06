@@ -311,12 +311,12 @@ class Bot:
         merge_series = adv_filter_keys(merge_series, ranks=7, remove=True)  # Remove max ranks
         # Try to merge high priority units
         merge_prio = adv_filter_keys(merge_series,
-                                     units=['chemist.png', 'bombardier.png', 'sword.png', 'summoner.png', 'knight_statue.png'])
+                                     units=['chemist.png', 'bombardier.png', 'sword.png', 'summoner.png', 'trapper.png', 'knight_statue.png'])
         if not merge_prio.empty:
             info = 'Merging High Priority!'
             merge_df = self.merge_unit(df_split, merge_prio)
-        # Merge if board is getting full was 2 chgd 1
-        if df_groups['empty.png'] <= 1:
+        # Merge if board is getting full. Runs well with 1 also.
+        if df_groups['empty.png'] <= 2:
             info = 'Merging!'
             # Add criteria
             low_series = adv_filter_keys(merge_series, ranks=rank, remove=False)
@@ -397,7 +397,7 @@ class Bot:
                     if avail_buttons['icon'].isin(['back_button.png', 'fighting.png']).any():
                         break
 
-    # Locate game home screen and try to start fight is chosen
+    # Locate game home screen and try to start fight.
     def battle_screen(self, start=False, pve=True, floor=5):
         # Scan screen for any key buttons
         df = self.get_current_icons(available=True)
@@ -534,7 +534,7 @@ def get_unit_count(grid_df):
 
 
 # Removes 1x of the highest rank unit from the merge_series
-def preserve_unit(unit_series, target='chemist.png', keep_min=False):
+def preserve_unit(unit_series, target='trapper.png', keep_min=False):
     """
     Remove 1x of the highest rank unit from the merge_series
     param: merge_series - pandas series of units to remove

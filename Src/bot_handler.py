@@ -65,7 +65,7 @@ def start_bot_class(logger):
 
 
 # Loop for combat actions
-def combat_loop(bot, grid_df, mana_targets, user_target='cold_elemental.png'):
+def combat_loop(bot, grid_df, mana_targets, user_target='demon_hunter.png'):
     time.sleep(0.2)
     # Upgrade units
     bot.mana_level(mana_targets, hero_power=True)
@@ -82,7 +82,7 @@ def bot_loop(bot, info_event):
     config = bot.config['bot']
     user_pve = config.getboolean('pve', True)
     bot.logger.warning(f'PVE is set to {user_pve}')
-    user_floor = int(config.get('floor', 5))
+    user_floor = int(config.get('floor', 10))
     user_level = np.fromstring(config['mana_level'], dtype=int, sep=',')
     user_target = config['dps_unit'].split('.')[0] + '.png'
     # Load optional settings

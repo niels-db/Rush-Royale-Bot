@@ -38,7 +38,7 @@ class RR_bot:
         self.logger = bot_logger.create_log_feed(logger_feed)
         start_button = Button(self.frames[2], text="Start Bot", command=self.start_command)
         stop_button = Button(self.frames[2], text='Stop Bot', command=self.stop_bot, padx=20)
-        leave_dungeon = Button(self.frames[2], text='Quit Floor/Match', command=self.leave_game, bg='#ff0000', fg='#000000')
+        leave_dungeon = Button(self.frames[2], text='Quit Floor/PvP', command=self.leave_game, bg='#ff0000', fg='#000000')
         start_button.grid(row=0, column=1, padx=10)
         stop_button.grid(row=0, column=2, padx=5)
         leave_dungeon.grid(row=0, column=3, padx=5)
@@ -177,7 +177,6 @@ def create_options(frame1, config):
     ads_var = IntVar()
     pve_check = Checkbutton(frame1, text='PvE', variable=pve_var, justify=LEFT).grid(row=0, column=1, sticky=W)
     ad_check = Checkbutton(frame1, text='Watch ads', variable=ads_var,justify=LEFT).grid(row=0, column=2, sticky=W)
-    #
     # Mana level targets
     mana_label = Label(frame1, text="Mana Level Targets", justify=LEFT).grid(row=2, column=0, sticky=W)
     stored_values = np.fromstring(config['bot']['mana_level'], dtype=int, sep=',')
