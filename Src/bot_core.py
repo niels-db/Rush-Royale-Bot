@@ -311,7 +311,7 @@ class Bot:
         merge_series = adv_filter_keys(merge_series, ranks=7, remove=True)  # Remove max ranks
         # Try to merge high priority units
         merge_prio = adv_filter_keys(merge_series,
-                                     units=['chemist.png', 'bombardier.png', 'summoner.png', 'knight_statue.png'])
+                                     units=['chemist.png', 'bombardier.png', 'sword.png', 'summoner.png', 'knight_statue.png'])
         if not merge_prio.empty:
             info = 'Merging High Priority!'
             merge_df = self.merge_unit(df_split, merge_prio)
