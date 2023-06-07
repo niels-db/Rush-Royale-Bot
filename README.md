@@ -1,7 +1,7 @@
 # Rush-Royale-Bot
 Python based bot for Rush Royale.
 
-Reworked by Jimm
+Created by AxelBjork, Updated and reworked by Jimm1432
 
 Use with Bluestacks on PC
 
