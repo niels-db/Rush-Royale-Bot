@@ -30,7 +30,7 @@ Install Latest Python 3.9 (Windows installer 64-bit)
 
 https://www.python.org/downloads/ (windows 64-bit installer)[https://www.python.org/ftp/python/3.9.13/python-3.9.13-amd64.exe]
 
-Select add Python to path, check `python --version`  works and gives Python 3.9.13
+Select add Python to path, check in Terminal `python --version`  works and gives Python 3.9.13
 
 Download and extract this repo
 
@@ -40,16 +40,30 @@ Install Latest Bluestacks 5
 
 Settings:
 
-(Display) Resolution: 900 x 1600  portrait mode. 
+(Display) Resolution: 900 x 1600 Portrait mode. 
 
 (Advanced) Android Debug Bridge: Enabled 
 
-Setup google account, download rush royale, ect.
+Setup google account, download rush royale.
 
 **Bot**
 
-run install.bat to create repo and install dependencies
+Run install.bat to create repo and install dependencies.
 
-run lanch_gui.bat
+Run launch_gui.bat to start the bots GUI.
 
-units have to be configured in config.ini file.
+Units have to be configured in config.ini file first. 
+
+Enter my new player code if you wish.
+GQ3TMNZSGQYDS
+
+
+
+Send any Tips for me to keep updating and improving this via
+Google pay/PayPal
+mr.doble at gmail.com
+Bitcoin
+3EQq6Zf5isPdekRSryR51xD3eQ2BR7Mwi4
+Eth
+0x1d2Cc985199d4085b3aEFe8Fc7773Eb761E3b7b6
+
