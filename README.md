@@ -60,10 +60,13 @@ GQ3TMNZSGQYDS
 
 
 Send any Tips for me to keep updating and improving this via
+
 Google pay/PayPal
 mr.doble at gmail.com
+
 Bitcoin
 3EQq6Zf5isPdekRSryR51xD3eQ2BR7Mwi4
+
 Eth
 0x1d2Cc985199d4085b3aEFe8Fc7773Eb761E3b7b6
 
