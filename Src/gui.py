@@ -184,7 +184,7 @@ def create_options(frame1, config):
     shaman_var = IntVar(value=user_shaman)
     pve_check = Checkbutton(frame1, text='PvE', variable=pve_var, justify=LEFT).grid(row=0, column=1, sticky=W)
     ad_check = Checkbutton(frame1, text='ADs', variable=ads_var, justify=LEFT).grid(row=0, column=2, sticky=W)
-    shaman_check = Checkbutton(frame1, text='Req Shaman', variable=shaman_var, justify=LEFT).grid(row=0, column=3, sticky=W)
+    shaman_check = Checkbutton(frame1, text='Req Shaman *Use in PvE ONLY*', variable=shaman_var, justify=LEFT).grid(row=0, column=3, sticky=W)
     # Mana level targets
     mana_label = Label(frame1, text="Mana Level Targets", justify=LEFT).grid(row=2, column=0, sticky=W)
     stored_values = np.fromstring(config['bot']['mana_level'], dtype=int, sep=',')
