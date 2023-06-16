@@ -52,7 +52,7 @@ Settings:
 
 * Run launch_gui.bat to start the bots GUI.
 
-* Units have to be configured in config.ini file first. 
+* Units have to be configured in config.ini file first, Other settings are set by GUI. 
 
 * Enter my new player code if you wish.  GQ3TMNZSGQYDS
 
