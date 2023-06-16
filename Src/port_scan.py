@@ -16,7 +16,7 @@ def connect_port(ip, port, batch, open_ports):
             open_ports[tar_port] = 'open'
             # Make it Popen and kill shell after couple seconds
             p = Popen(f'.scrcpy\\adb connect {ip}:{tar_port}', shell=True)
-            time.sleep(10)  # Give real client 10 seconds to connect
+            time.sleep(5)  # Give real client 5 seconds to connect
             p.terminate()
     return result == 0
 
@@ -27,7 +27,7 @@ def scan_ports(target_ip, port_start, port_end, batch=3):
     threads = []
     open_ports = {}
     port_range = range(port_start, port_end, batch)
-    socket.setdefaulttimeout(10)
+    socket.setdefaulttimeout(1)
     print(f"Scanning {target_ip} Ports {port_start} - {port_end}")
     # Create one thread per port
     for port in port_range:

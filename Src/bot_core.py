@@ -295,7 +295,7 @@ class Bot:
                 time.sleep(10)
             if self.config.getboolean('bot', 'require_shaman'):
                 merge_series = adv_filter_keys(merge_series, units='demon_hunter.png', remove=True)
-        merge_series = preserve_unit(merge_series, target='chemist.png')
+        merge_series = preserve_unit(merge_series, target='trapper.png')
         # Remove 4x cauldrons
         for _ in range(4):
             merge_series = preserve_unit(merge_series, target='cauldron.png', keep_min=True)
