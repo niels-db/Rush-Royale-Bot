@@ -113,7 +113,7 @@ class Bot:
 
     # find icon on screen
     def getXYByImage(self, target, new=True):
-        valid_targets = ['battle_icon', 'pvp_button', 'back_button', 'cont_button', 'fighting']
+        valid_targets = ['battle_icon', 'pvp_button', 'back_button', '0cont_button', 'fighting']
         if not target in valid_targets:
             return "INVALID TARGET"
         if new:

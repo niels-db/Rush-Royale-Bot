@@ -1,5 +1,17 @@
-Rush Royale Bot v1.1                 |
-|                                    |
+Rush Royale Bot v1.15
+Created by AxelBjork
+Updated and reworked by Jimm1432
+
+*Change Log*
+1.15
+Added all current units.
+Fixed AD check box.
+Fixed some coding errors.
+Cleaned up Rank images.
+Updated scrcpy to 1.25.
+
+|				      |
+|                                     |
 |             ,.___          ___....--._
 |           ,'     `""""""""'           `-._
 |          J           _____________________`-.

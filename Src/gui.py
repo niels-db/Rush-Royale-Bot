@@ -83,6 +83,7 @@ class RR_bot:
         self.config['bot']['floor'] = str(floor_var)
         self.config['bot']['mana_level'] = np.array2string(card_level, separator=',')[1:-1]
         self.config['bot']['pve'] = str(bool(self.pve_var.get()))
+        self.config['bot']['watch_ad'] = str(bool(self.ads_var.get()))
         with open('config.ini', 'w') as configfile:
             self.config.write(configfile)
         self.logger.info("Stored settings to config!")
@@ -174,9 +175,11 @@ def create_options(frame1, config):
     if config.has_option('bot', 'pve'):
         user_pvp = int(config.getboolean('bot', 'pve'))
     pve_var = IntVar(value=user_pvp)
-    ads_var = IntVar()
+    if config.has_option('bot', 'watch_ad'):
+        user_ads = int(config.getboolean('bot', 'watch_ad'))
+    ads_var = IntVar(value=user_ads)
     pve_check = Checkbutton(frame1, text='PvE', variable=pve_var, justify=LEFT).grid(row=0, column=1, sticky=W)
-    ad_check = Checkbutton(frame1, text='Watch ads', variable=ads_var,justify=LEFT).grid(row=0, column=2, sticky=W)
+    ad_check = Checkbutton(frame1, text='ADs', variable=ads_var, justify=LEFT).grid(row=0, column=2, sticky=W)
     # Mana level targets
     mana_label = Label(frame1, text="Mana Level Targets", justify=LEFT).grid(row=2, column=0, sticky=W)
     stored_values = np.fromstring(config['bot']['mana_level'], dtype=int, sep=',')

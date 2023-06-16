@@ -81,7 +81,9 @@ def bot_loop(bot, info_event):
     # Load user config
     config = bot.config['bot']
     user_pve = config.getboolean('pve', True)
-    bot.logger.warning(f'PVE is set to {user_pve}')
+    user_ads = config.getboolean('watch_ad', True)
+    bot.logger.info(f'PVE is set to {user_pve}')
+    bot.logger.info(f'ADs are set to {user_ads}')
     user_floor = int(config.get('floor', 10))
     user_level = np.fromstring(config['mana_level'], dtype=int, sep=',')
     user_target = config['dps_unit'].split('.')[0] + '.png'
@@ -139,7 +141,7 @@ def bot_loop(bot, info_event):
             output = bot.battle_screen(start=True, pve=user_pve, floor=user_floor)
             wait += 1
             if wait > 10:
-                bot.logger.info('RESTARTING')
+                bot.logger.warning('RESTARTING')
                 bot.restart_RR(),
                 wait = 0
 

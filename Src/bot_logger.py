@@ -85,7 +85,7 @@ class TextHandler(logging.StreamHandler):
                 start, end = match.span()
                 for code in codes:
                     apply_formatting(code, "{}.{}".format(line_nb, start - delta))
-                delta += end - start  # take into account offste due to deletion of ansi code
+                delta += end - start  # take into account offset due to deletion of ansi code
 
         find_ansi(lines[0], first_line, first_char)  # first line, with initial offset due to insertion position
         for line_nb, line in enumerate(lines[1:], first_line + 1):
