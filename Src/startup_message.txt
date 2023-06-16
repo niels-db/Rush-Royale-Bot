@@ -1,8 +1,10 @@
-Rush Royale Bot v1.15
+Rush Royale Bot v1.16
 Created by AxelBjork
 Updated and reworked by Jimm1432
 
 *Change Log*
+1.16
+Added Shaman to GUI
 1.15
 Added all current units.
 Fixed AD check box.

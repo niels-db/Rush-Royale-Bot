@@ -284,7 +284,7 @@ class Bot:
         # Do special merge with dryad/Harley
         self.special_merge(df_split, merge_series, merge_target)
         # Use harely on high dps targets
-        if merge_target == 'cold_elemental.png':
+        if merge_target == 'demon_hunter.png':
             self.harley_merge(df_split, merge_series, target=merge_target)
             # Remove all demons (for co-op)
             demons = adv_filter_keys(merge_series, units='demon_hunter.png')

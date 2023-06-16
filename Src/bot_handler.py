@@ -65,7 +65,7 @@ def start_bot_class(logger):
 
 
 # Loop for combat actions
-def combat_loop(bot, grid_df, mana_targets, user_target='demon_hunter.png'):
+def combat_loop(bot, grid_df, mana_targets, user_target='demon_hunter.png'):  
     time.sleep(0.2)
     # Upgrade units
     bot.mana_level(mana_targets, hero_power=True)
@@ -82,13 +82,15 @@ def bot_loop(bot, info_event):
     config = bot.config['bot']
     user_pve = config.getboolean('pve', True)
     user_ads = config.getboolean('watch_ad', True)
+    user_shaman = config.getboolean('require_shaman', False)
     bot.logger.info(f'PVE is set to {user_pve}')
     bot.logger.info(f'ADs are set to {user_ads}')
+    bot.logger.info(f'Req Shaman for PvE {user_shaman}')
     user_floor = int(config.get('floor', 10))
     user_level = np.fromstring(config['mana_level'], dtype=int, sep=',')
     user_target = config['dps_unit'].split('.')[0] + '.png'
     # Load optional settings
-    require_shaman = config.getboolean('require_shaman', False)
+    require_shaman = user_shaman
     max_loops = int(config.get('max_loops', 800))  # this will increase time waiting when logging in from mobile
     # Dev options (only adds images to dataset, rank ai can be trained with bot_perception.quick_train_model)
     train_ai = False
