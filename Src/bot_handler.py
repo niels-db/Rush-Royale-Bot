@@ -142,7 +142,7 @@ def bot_loop(bot, info_event):
             bot.logger.info(f'{output[1]}, wait count: {wait}')
             output = bot.battle_screen(start=True, pve=user_pve, floor=user_floor)
             wait += 1
-            if wait > 10:
+            if wait > 15:
                 bot.logger.warning('RESTARTING')
                 bot.restart_RR(),
                 wait = 0

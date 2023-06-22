@@ -113,7 +113,7 @@ class Bot:
 
     # find icon on screen
     def getXYByImage(self, target, new=True):
-        valid_targets = ['battle_icon', 'pvp_button', 'back_button', '0cont_button', 'fighting']
+        valid_targets = ['battle_icon', 'collect_pvp', 'pvp_button', 'back_button', '0watch_ad', '0gift.png', '1cont_button', 'fighting']
         if not target in valid_targets:
             return "INVALID TARGET"
         if new:
@@ -403,7 +403,7 @@ class Bot:
         df = self.get_current_icons(available=True)
         if not df.empty:
             # list of buttons
-            if (df == 'fighting.png').any(axis=None) and not (df == '0cont_button.png').any(axis=None):
+            if (df == 'fighting.png').any(axis=None) and not (df == '1cont_button.png').any(axis=None):
                 return df, 'fighting'
             if (df == 'friend_menu.png').any(axis=None):
                 self.click_button(np.array([100, 600]))
@@ -419,7 +419,7 @@ class Bot:
                 time.sleep(1)
                 return df, 'home'
             # Check first button is clickable
-            df_click = df[df['icon'].isin(['back_button.png', 'battle_icon.png', '0cont_button.png', '1quit.png'])]
+            df_click = df[df['icon'].isin(['back_button.png', 'battle_icon.png', 'collect_pvp.png' '0watch_ad.png', '0gift.png', '1cont_button.png', '1quit.png'])]
             if not df_click.empty:
                 button_pos = df_click['pos [X,Y]'].tolist()[0]
                 self.click_button(button_pos)
@@ -430,6 +430,7 @@ class Bot:
     # Navigate and locate store refresh button from battle screen
     def find_store_refresh(self):
         self.click_button((100, 1500))  # Click store button
+        self.click_button((475, 1300))  # Click store button
         [self.swipe([0, 0], [2, 0]) for i in range(5)]  # swipe to top
         self.click(30, 150)  # stop scroll
         avail_buttons = self.get_current_icons(available=True)
@@ -444,10 +445,10 @@ class Bot:
         # Scroll up and find the refresh button
         pos = self.find_store_refresh()
         if isinstance(pos, np.ndarray):
-            self.click_button(pos - [300, 820])  # Click first (free) item
+            self.click_button(pos - [300, 750])  # Click first (free) item
             self.click(400, 1165)  # buy
             self.click(30, 150)  # remove pop-up
-            self.click_button(pos + [400, -400])  # Click last item (possible legendary)
+            self.click_button(pos + [300, -400])  # Click last item (possible legendary)
             self.click(400, 1165)  # buy
             self.click(30, 150)  # remove pop-up
             self.logger.warning('Bought store units!')
@@ -460,16 +461,16 @@ class Bot:
         if (avail_buttons == 'quest_done.png').any(axis=None):
             pos = get_button_pos(avail_buttons, 'quest_done.png')
             self.click_button(pos)
-            self.click(700, 600)  # collect second completed quest
-            self.click(700, 400)  # collect second completed quest
-            [self.click(150, 250) for i in range(2)]  # click dailies twice
-            self.click(420, 420)  # collect ad chest
+            self.click(700, 625)  # collect second completed quest
+            self.click(700, 875)  # collect second completed quest was 700 400
+            [self.click(150, 250) for i in range(2)]  # click dailies tab twice
+            self.click(420, 440)  # collect ad chest
         elif (avail_buttons == 'ad_season.png').any(axis=None):
-            pos = get_button_pos(avail_buttons, 'ad_season.png')
-            self.click_button(pos)
+            self.click(120, 1150)
         elif (avail_buttons == 'ad_pve.png').any(axis=None):
-            pos = get_button_pos(avail_buttons, 'ad_pve.png')
-            self.click_button(pos)
+            self.click(525, 1215)
+        elif (avail_buttons == 'ad_pvp.png').any(axis=None):
+            self.click(120, 1215)
         elif (avail_buttons == 'battle_icon.png').any(axis=None):
             self.refresh_shop()
         else:
