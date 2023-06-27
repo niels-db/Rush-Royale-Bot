@@ -1,4 +1,5 @@
 from tkinter import *
+import shutil
 import os
 import numpy as np
 import threading
@@ -8,7 +9,6 @@ import configparser
 # internal
 import bot_handler
 import bot_logger
-
 
 # GUI Class
 class RR_bot:
@@ -184,7 +184,7 @@ def create_options(frame1, config):
     shaman_var = IntVar(value=user_shaman)
     pve_check = Checkbutton(frame1, text='PvE', variable=pve_var, justify=LEFT).grid(row=0, column=1, sticky=W)
     ad_check = Checkbutton(frame1, text='ADs', variable=ads_var, justify=LEFT).grid(row=0, column=2, sticky=W)
-    shaman_check = Checkbutton(frame1, text='Req Shaman *Use in PvE ONLY*', variable=shaman_var, justify=LEFT).grid(row=0, column=3, sticky=W)
+    shaman_check = Checkbutton(frame1, text='Shaman', variable=shaman_var, justify=LEFT).grid(row=0, column=3, sticky=W)
     # Mana level targets
     mana_label = Label(frame1, text="Mana Level Targets", justify=LEFT).grid(row=2, column=0, sticky=W)
     stored_values = np.fromstring(config['bot']['mana_level'], dtype=int, sep=',')
@@ -216,7 +216,7 @@ def create_combat_info(frame2):
 def create_base():
     root = Tk()
     root.title("RR bot")
-    root.geometry("800x600")
+    root.geometry("900x700")
     # Set dark background
     root.configure(background='#575559')
     # Set window icon to png
@@ -240,6 +240,24 @@ def write_to_widget(root, tbox, text):
     tbox.insert(END, text)
     tbox.config(state=DISABLED)
     root.update_idletasks()
+    
+  # For swaping out config files, Overwrites working config file.
+def copy_file():
+    try:
+        if var.get() == "deck1":
+            shutil.copy('./configs/deck1.ini', './config.ini')
+        elif var.get() == "deck2":
+            shutil.copy('./configs/deck2.ini', './config.ini')
+        elif var.get() == "deck3":
+            shutil.copy('./configs/deck3.ini', './config.ini')
+        elif var.get() == "deck4":
+            shutil.copy('./configs/deck4.ini', './config.ini')
+        elif var.get() == "deck5":
+            shutil.copy('./configs/deck5.ini', './config.ini')
+    except FileNotFoundError:
+        messagebox.showwarning("Warning", "Config.ini not found!")
+
+
 
 
 # Start the actual bot

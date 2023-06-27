@@ -9,6 +9,7 @@ import cv2
 import port_scan
 import bot_core
 import bot_perception
+import config_selector
 
 import zipfile
 import functools
@@ -78,6 +79,8 @@ def combat_loop(bot, grid_df, mana_targets, user_target='demon_hunter.png'):
 
 # Run the bot
 def bot_loop(bot, info_event):
+    #Load config selector
+    config_selector.move_window(event)
     # Load user config
     config = bot.config['bot']
     user_pve = config.getboolean('pve', True)
