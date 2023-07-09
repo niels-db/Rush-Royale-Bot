@@ -193,8 +193,8 @@ def create_options(frame1, config):
     pve_check = Checkbutton(frame1, text='PvE', variable=pve_var, justify=LEFT).grid(row=0, column=1, sticky=W)
     ad_check = Checkbutton(frame1, text='ADs', variable=ads_var, justify=LEFT).grid(row=0, column=2, sticky=W)
     shaman_check = Checkbutton(frame1, text='Req Shaman *Use in PvE ONLY*', variable=shaman_var, justify=LEFT).grid(row=0, column=3, sticky=W)
-    treasure_map_green_check = Checkbutton(frame1, text='Treasure map green', variable=treasure_map_green_var, justify=LEFT).grid(row=0, column=5, sticky=W)
-    treasure_map_gold_check = Checkbutton(frame1, text='Treasure map gold', variable=treasure_map_gold_var, justify=LEFT).grid(row=0, column=6, sticky=W)
+    treasure_map_green_check = Checkbutton(frame1, text='Treasure map green', variable=treasure_map_green_var, justify=LEFT).grid(row=0, column=4, sticky=W)
+    treasure_map_gold_check = Checkbutton(frame1, text='Treasure map gold', variable=treasure_map_gold_var, justify=LEFT).grid(row=0, column=5, sticky=W)
     # Mana level targets
     mana_label = Label(frame1, text="Mana Level Targets", justify=LEFT).grid(row=2, column=0, sticky=W)
     stored_values = np.fromstring(config['bot']['mana_level'], dtype=int, sep=',')
