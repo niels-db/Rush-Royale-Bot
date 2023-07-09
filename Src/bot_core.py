@@ -400,28 +400,22 @@ class Bot:
 
     #Scan and click treasure map buttons
     def use_treasure_map(self):
-        time.sleep(1)
-        if self.config.getboolean('bot', 'treasure_map_green') and self.config.getboolean('bot', 'treasure_map_gold'):
+        if self.config.getboolean('bot', 'treasure_map_green') or self.config.getboolean('bot', 'treasure_map_gold'):
+            time.sleep(1)
             df = self.get_current_icons(available=True)
-            df_click = df[df['icon'].isin(['treasure_map_green.png', 'treasure_map_gold.png'])]
-            if not df_click.empty:
-                button_pos = df_click[df_click['icon'] == 'treasure_map_green.png']['pos [X,Y]'].tolist()
-                if button_pos:
-                    self.click_button(button_pos[0])
-        elif self.config.getboolean('bot', 'treasure_map_green'):
-            df = self.get_current_icons(available=True)
-            df_click = df[df['icon'] == 'treasure_map_green.png']
-            if not df_click.empty:
-                button_pos = df_click['pos [X,Y]'].tolist()
-                if button_pos:
+            if self.config.getboolean('bot', 'treasure_map_green') and 'treasure_map_green.png' in df['icon'].values:
+                df_click_green = df[df['icon'] == 'treasure_map_green.png']
+                if not df_click_green.empty:
+                    button_pos = df_click_green['pos [X,Y]'].tolist()
+                    if button_pos:
                         self.click_button(button_pos[0])
-        elif self.config.getboolean('bot', 'treasure_map_gold'):
-            df = self.get_current_icons(available=True)
-            df_click = df[df['icon'] == 'treasure_map_gold.png']
-            if not df_click.empty:
-                button_pos = df_click['pos [X,Y]'].tolist()
-                if button_pos:
+            elif self.config.getboolean('bot', 'treasure_map_gold') and 'treasure_map_gold.png' in df['icon'].values:
+                df_click_gold = df[df['icon'] == 'treasure_map_gold.png']
+                if not df_click_gold.empty:
+                    button_pos = df_click_gold['pos [X,Y]'].tolist()
+                    if button_pos:
                         self.click_button(button_pos[0])
+
 
     # Locate game home screen and try to start fight.
     def battle_screen(self, start=False, pve=True, floor=5):
