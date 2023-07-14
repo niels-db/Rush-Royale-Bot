@@ -382,13 +382,15 @@ class Bot:
 
             # Click play floor if found
             if not (pos == np.array([0, 0])).any():
+                treasure_map_coords = self.get_treasure_map_to_click()
                 if floor % 3 == 0:
                     self.click_button(pos + [30, -460])
                 elif floor % 3 == 1:
                     self.click_button(pos + [30, 485])
                 elif floor % 3 == 2:
                     self.click_button(pos + [30, 885])
-                self.use_treasure_map()
+                if treasure_map_coords is not None:
+                    self.click_button(treasure_map_coords)
                 self.click_button((500, 600))
                 for i in range(10):
                     time.sleep(2)
@@ -399,22 +401,21 @@ class Bot:
                         break
 
     #Scan and click treasure map buttons
-    def use_treasure_map(self):
+    def get_treasure_map_to_click(self):
         if self.config.getboolean('bot', 'treasure_map_green') or self.config.getboolean('bot', 'treasure_map_gold'):
-            time.sleep(1)
             df = self.get_current_icons(available=True)
+            self.logger.debug(f'Detected icons {df}')
             if self.config.getboolean('bot', 'treasure_map_green') and 'treasure_map_green.png' in df['icon'].values:
                 df_click_green = df[df['icon'] == 'treasure_map_green.png']
+                self.logger.debug(f'df_click_green {df_click_green}')
                 if not df_click_green.empty:
-                    button_pos = df_click_green['pos [X,Y]'].tolist()
-                    if button_pos:
-                        self.click_button(button_pos[0])
-            elif self.config.getboolean('bot', 'treasure_map_gold') and 'treasure_map_gold.png' in df['icon'].values:
+                    return (350, 1450)
+            elif self.config.getboolean('bot', 'treasure_map_gold') and 'treasure_map_gold.png' in df['icon'].values and 'treasure_map_gold_is_zero.png' not in df['icon'].values:
                 df_click_gold = df[df['icon'] == 'treasure_map_gold.png']
+                self.logger.debug(f'df_click_gold {df_click_gold}')
                 if not df_click_gold.empty:
-                    button_pos = df_click_gold['pos [X,Y]'].tolist()
-                    if button_pos:
-                        self.click_button(button_pos[0])
+                    return (520, 1450)
+        return None
 
 
     # Locate game home screen and try to start fight.
