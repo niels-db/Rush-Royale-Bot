@@ -6,6 +6,7 @@ Updated and reworked by Jimm1432, niels-db
 1.17
 Added treasure map support
 Fixed scrpy zip extraction
+Fixed some button detection
 1.16
 Added Shaman to GUI
 1.15
