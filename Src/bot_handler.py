@@ -156,10 +156,16 @@ def check_scrcpy(logger):
         # Download
         download('https://github.com/Genymobile/scrcpy/releases/download/v1.25/scrcpy-win64-v1.25.zip', 'scrcpy.zip')
         with zipfile.ZipFile('scrcpy.zip', 'r') as zip_ref:
-            zip_ref.extractall('.scrcpy')
+            for member in zip_ref.namelist():
+                if not member.endswith('/'):  # Exclude directories
+                    # Extract the file directly into the .scrcpy folder
+                    extracted_path = os.path.join('.scrcpy', os.path.basename(member))
+                    os.makedirs(os.path.dirname(extracted_path), exist_ok=True)  # Create the directory if it doesn't exist
+                    with zip_ref.open(member) as source, open(extracted_path, 'wb') as target:
+                        shutil.copyfileobj(source, target)
         # Verify
         if os.path.exists('.scrcpy/scrcpy.exe'):
-            logger.info('scrcpy succesfully installed')
-            # remove zip file
+            logger.info('scrcpy successfully installed')
+            # Remove the zip file
             os.remove('scrcpy.zip')
             return True
