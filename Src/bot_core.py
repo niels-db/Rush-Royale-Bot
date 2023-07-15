@@ -404,15 +404,12 @@ class Bot:
     def get_treasure_map_to_click(self):
         if self.config.getboolean('bot', 'treasure_map_green') or self.config.getboolean('bot', 'treasure_map_gold'):
             df = self.get_current_icons(available=True)
-            self.logger.debug(f'Detected icons {df}')
             if self.config.getboolean('bot', 'treasure_map_green') and 'treasure_map_green.png' in df['icon'].values:
                 df_click_green = df[df['icon'] == 'treasure_map_green.png']
-                self.logger.debug(f'df_click_green {df_click_green}')
                 if not df_click_green.empty:
                     return (350, 1450)
             elif self.config.getboolean('bot', 'treasure_map_gold') and 'treasure_map_gold.png' in df['icon'].values and 'treasure_map_gold_is_zero.png' not in df['icon'].values:
                 df_click_gold = df[df['icon'] == 'treasure_map_gold.png']
-                self.logger.debug(f'df_click_gold {df_click_gold}')
                 if not df_click_gold.empty:
                     return (520, 1450)
         return None
