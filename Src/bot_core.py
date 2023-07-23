@@ -281,66 +281,92 @@ class Bot:
         merge_series = unit_series.copy()
         # Remove empty groups
         merge_series = adv_filter_keys(merge_series, units='empty.png', remove=True)
-        # Do special merge with dryad/Harley
-        self.special_merge(df_split, merge_series, merge_target)
-        # Use harely on high dps targets
-        if merge_target == 'demon_hunter.png':
-            self.harley_merge(df_split, merge_series, target=merge_target)
-            # Remove all demons (for co-op)
-            demons = adv_filter_keys(merge_series, units='demon_hunter.png')
-            num_demon = sum(demons)
-            if num_demon >= 11:
-                # If board is mostly demons, chill out
-                self.logger.info(f'Board is full of demons, waiting...')
-                time.sleep(10)
-            if self.config.getboolean('bot', 'require_shaman'):
-                merge_series = adv_filter_keys(merge_series, units='demon_hunter.png', remove=True)
-        merge_series = preserve_unit(merge_series, target='trapper.png')
-        # Remove 4x cauldrons
-        for _ in range(4):
-            merge_series = preserve_unit(merge_series, target='cauldron.png', keep_min=True)
-        # Try to keep knight_statue numbers even (can conflict if special_merge already merged)
-        num_knight = sum(adv_filter_keys(merge_series, units='knight_statue.png'))
-        if num_knight % 2 == 1:
-            self.harley_merge(df_split, merge_series, target='knight_statue.png')
-        # Preserve 2 highest knight statues
-        for _ in range(2):
-            merge_series = preserve_unit(merge_series, target='knight_statue.png')
-        # Select stuff to merge
-        merge_series = merge_series[merge_series >= 2]  # At least 2 units
-        merge_series = adv_filter_keys(merge_series, ranks=7, remove=True)  # Remove max ranks
-        # Try to merge high priority units
-        merge_prio = adv_filter_keys(merge_series,
-                                     units=['chemist.png', 'bombardier.png', 'sword.png', 'summoner.png', 'trapper.png', 'knight_statue.png'])
-        if not merge_prio.empty:
-            info = 'Merging High Priority!'
-            merge_df = self.merge_unit(df_split, merge_prio)
-        # Merge if board is getting full. Runs well with 1 also.
-        if df_groups['empty.png'] <= 2:
-            info = 'Merging!'
-            # Add criteria
-            low_series = adv_filter_keys(merge_series, ranks=rank, remove=False)
-            if not low_series.empty:
-                merge_df = self.merge_unit(df_split, low_series)
-            else:
-                # If grid seems full, merge more units
-                info = 'Merging high level!'
-                merge_series = adv_filter_keys(merge_series,
-                                               ranks=[3, 4, 5, 6, 7],
-                                               units=['zealot.png', 'crystal.png', 'bruser.png', merge_target],
-                                               remove=True)
-                if not merge_series.empty:
-                    merge_df = self.merge_unit(df_split, merge_series)
+        if self.block_merging():
+            return grid_df, unit_series, merge_series, merge_df, info
         else:
-            info = 'need more units!'
-        return grid_df, unit_series, merge_series, merge_df, info
+            # Do special merge with dryad/Harley
+            self.special_merge(df_split, merge_series, merge_target)
+            # Use harely on high dps targets
+            if merge_target == 'demon_hunter.png':
+                self.harley_merge(df_split, merge_series, target=merge_target)
+                # Remove all demons (for co-op)
+                demons = adv_filter_keys(merge_series, units='demon_hunter.png')
+                num_demon = sum(demons)
+                if num_demon >= 11:
+                    # If board is mostly demons, chill out
+                    self.logger.info(f'Board is full of demons, waiting...')
+                    time.sleep(10)
+                if self.config.getboolean('bot', 'require_shaman'):
+                    merge_series = adv_filter_keys(merge_series, units='demon_hunter.png', remove=True)
+            merge_series = preserve_unit(merge_series, target='trapper.png')
+            # Remove 4x cauldrons
+            for _ in range(4):
+                merge_series = preserve_unit(merge_series, target='cauldron.png', keep_min=True)
+            # Try to keep knight_statue numbers even (can conflict if special_merge already merged)
+            num_knight = sum(adv_filter_keys(merge_series, units='knight_statue.png'))
+            if num_knight % 2 == 1:
+                self.harley_merge(df_split, merge_series, target='knight_statue.png')
+            # Preserve 2 highest knight statues
+            for _ in range(2):
+                merge_series = preserve_unit(merge_series, target='knight_statue.png')
+            # Select stuff to merge
+            merge_series = merge_series[merge_series >= 2]  # At least 2 units
+            merge_series = adv_filter_keys(merge_series, ranks=7, remove=True)  # Remove max ranks
+            # Try to merge high priority units
+            merge_prio = adv_filter_keys(merge_series,
+                                        units=['chemist.png', 'bombardier.png', 'sword.png', 'summoner.png', 'trapper.png', 'knight_statue.png'])
+            if not merge_prio.empty:
+                info = 'Merging High Priority!'
+                merge_df = self.merge_unit(df_split, merge_prio)
+            # Merge if board is getting full. Runs well with 1 also.
+            if df_groups['empty.png'] <= 2:
+                info = 'Merging!'
+                # Add criteria
+                low_series = adv_filter_keys(merge_series, ranks=rank, remove=False)
+                if not low_series.empty:
+                    merge_df = self.merge_unit(df_split, low_series)
+                else:
+                    # If grid seems full, merge more units
+                    info = 'Merging high level!'
+                    merge_series = adv_filter_keys(merge_series,
+                                                ranks=[3, 4, 5, 6, 7],
+                                                units=['zealot.png', 'crystal.png', 'bruser.png', merge_target],
+                                                remove=True)
+                    if not merge_series.empty:
+                        merge_df = self.merge_unit(df_split, merge_series)
+            else:
+                info = 'need more units!'
+            return grid_df, unit_series, merge_series, merge_df, info
+
+    def block_merging(self):
+        if hasattr(self, 'available_icons'):
+            df = self.available_icons
+            # Don't merge if curse is detected
+            if 'curse.png' in df['icon'].values:
+                self.logger.info(f'Curse detected, not merging. Sleeping 10s')
+                time.sleep(10)
+                return True
+
+            # Don't merge if Bedlam has spawned
+            if 'bedlam.png' in df['icon'].values and 'bedlam_is_coming.png' not in df['icon'].values:
+                self.logger.info(f'Bedlam spawned, not merging. Sleeping 10s')
+                time.sleep(10)
+                return True
+        return False
 
     # Mana level cards
     def mana_level(self, cards, hero_power=False):
         upgrade_pos_dict = {1: [100, 1500], 2: [200, 1500], 3: [350, 1500], 4: [500, 1500], 5: [650, 1500]}
-        # Level each card
-        for card in cards:
-            self.click(*upgrade_pos_dict[card])
+        if hasattr(self, 'available_icons'):
+            df = self.available_icons
+            # Don't level cards if Puppeteer has spawned
+            if 'puppeteer.png' in df['icon'].values and 'puppeteer_is_coming.png' not in df['icon'].values:
+                self.logger.info(f'Puppeteer spawned, not upgrading cards. Sleeping 10s')
+                time.sleep(10)
+            else:
+                # Level each card
+                for card in cards:
+                    self.click(*upgrade_pos_dict[card])
         if hero_power:
             self.click(800, 1500)
 
@@ -418,7 +444,8 @@ class Bot:
     # Locate game home screen and try to start fight.
     def battle_screen(self, start=False, pve=True, floor=5):
         # Scan screen for any key buttons
-        df = self.get_current_icons(available=True)
+        self.available_icons = self.get_current_icons(available=True)
+        df = self.available_icons
         if not df.empty:
             # list of buttons
             if (df == 'fighting.png').any(axis=None) and not (df == '0cont_button.png').any(axis=None):
@@ -490,6 +517,9 @@ class Bot:
             self.click_button(pos)
         elif (avail_buttons == 'ad_pve.png').any(axis=None):
             pos = get_button_pos(avail_buttons, 'ad_pve.png')
+            self.click_button(pos)
+        elif (avail_buttons == 'ad_fight_end.png').any(axis=None):
+            pos = get_button_pos(avail_buttons, 'ad_fight_end.png')
             self.click_button(pos)
         elif (avail_buttons == 'battle_icon.png').any(axis=None):
             self.refresh_shop()

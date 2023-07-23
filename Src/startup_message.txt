@@ -1,4 +1,4 @@
-Rush Royale Bot v1.16
+Rush Royale Bot v1.17.1
 Created by AxelBjork
 Updated and reworked by Jimm1432, niels-db
 
