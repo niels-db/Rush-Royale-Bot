@@ -436,6 +436,9 @@ class Bot:
                     self.click_button(np.array([140, 1259]))
                 time.sleep(1)
                 return df, 'home'
+            # Watch ad at the end of a fight
+            if (df == 'ad_fight_end.png').any(axis=None) and ((df == 'victory.png').any(axis=None)):
+                self.watch_ads()
             # Check first button is clickable
             df_click = df[df['icon'].isin(['back_button.png', 'battle_icon.png', '0cont_button.png', '1quit.png'])]
             if not df_click.empty:
