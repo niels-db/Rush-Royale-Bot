@@ -491,6 +491,9 @@ class Bot:
         elif (avail_buttons == 'ad_pve.png').any(axis=None):
             pos = get_button_pos(avail_buttons, 'ad_pve.png')
             self.click_button(pos)
+        elif (avail_buttons == 'ad_fight_end.png').any(axis=None):
+            pos = get_button_pos(avail_buttons, 'ad_fight_end.png')
+            self.click_button(pos)
         elif (avail_buttons == 'battle_icon.png').any(axis=None):
             self.refresh_shop()
         else:
