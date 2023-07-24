@@ -13,3 +13,4 @@ RR_bot.log
 build
 dist
 config.ini
+Src/port_scan.py
