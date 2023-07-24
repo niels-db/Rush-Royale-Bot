@@ -343,8 +343,8 @@ class Bot:
             df = self.available_icons
             # Don't merge if curse is detected
             if 'curse.png' in df['icon'].values:
-                self.logger.info(f'Curse detected, not merging. Sleeping 10s')
-                time.sleep(10)
+                self.logger.info(f'Curse detected, not merging. Sleeping 30s')
+                time.sleep(30)
                 return True
 
             # Don't merge if Bedlam has spawned
