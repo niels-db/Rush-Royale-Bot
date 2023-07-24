@@ -1,8 +1,12 @@
-Rush Royale Bot v1.16
+Rush Royale Bot v1.17.1
 Created by AxelBjork
-Updated and reworked by Jimm1432
+Updated and reworked by Jimm1432, niels-db
 
 *Change Log*
+1.17
+Added treasure map support
+Fixed scrpy zip extraction
+Fixed some button detection
 1.16
 Added Shaman to GUI
 1.15
