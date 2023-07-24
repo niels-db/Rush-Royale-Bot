@@ -21,6 +21,7 @@ class Bot:
         self.bot_stop = False
         self.combat = self.output = self.grid_df = self.unit_series = self.merge_series = self.df_groups = self.info = self.combat_step = None
         self.logger = logging.getLogger('__main__')
+        self.selected_units = os.listdir("units")
         if device is None:
             device = port_scan.get_device()
         if not device:
@@ -214,7 +215,9 @@ class Bot:
         # Get special merge unit
         special_unit, normal_unit = [
             adv_filter_keys(merge_series, units=special_type, remove=remove) for remove in [False, True]
-        ]  # scrapper support not tested
+        ]
+        # self.logger.debug(f'special_unit: {special_unit}')
+        # self.logger.debug(f'normal_unit: {normal_unit}')
         # Get corresponding dataframes
         special_df, normal_df = [df_split.get_group(unit.index[0]).sample() for unit in [special_unit, normal_unit]]
         merge_df = pd.concat([special_df, normal_df])
@@ -269,6 +272,26 @@ class Bot:
                     merge_df = self.merge_special_unit(df_split, merge_series_target, special_type='harlequin.png')
                     break
         return merge_df
+    
+    # Scrapper merge
+    # Will stop any merge with dps unit that's higher than rank 2
+    def scrapper_merge(self, df_split, merge_target, merge_series, merge_series_with_scrapper, target='knight_statue.png'):
+        merge_df = None
+        # Try to copy target
+        scrapper_series = adv_filter_keys(merge_series_with_scrapper, units='scrapper.png')
+        if not scrapper_series.empty:
+            scrapper_rank = scrapper_series.index.get_level_values('rank')
+            for rank in scrapper_rank:
+                # Prevent scrapper from eating merge targets above rank 2
+                if target == merge_target and rank > 2:
+                    break
+                
+                merge_series_target = adv_filter_keys(merge_series_with_scrapper, units=['scrapper.png', target], ranks=rank)
+
+                if len(merge_series_target.index) == 2:
+                    merge_df = self.merge_special_unit(df_split, merge_series_target, special_type='scrapper.png')
+                    break
+        return merge_df
 
     # Try to find a merge target and merge it
     def try_merge(self, rank=1, prev_grid=None, merge_target='zealot.png'):
@@ -281,62 +304,119 @@ class Bot:
         merge_series = unit_series.copy()
         # Remove empty groups
         merge_series = adv_filter_keys(merge_series, units='empty.png', remove=True)
+        
         if self.block_merging():
             return grid_df, unit_series, merge_series, merge_df, info
         else:
-            # Do special merge with dryad/Harley
-            self.special_merge(df_split, merge_series, merge_target)
-            # Use harely on high dps targets
-            if merge_target == 'demon_hunter.png':
-                self.harley_merge(df_split, merge_series, target=merge_target)
-                # Remove all demons (for co-op)
-                demons = adv_filter_keys(merge_series, units='demon_hunter.png')
-                num_demon = sum(demons)
-                if num_demon >= 11:
-                    # If board is mostly demons, chill out
-                    self.logger.info(f'Board is full of demons, waiting...')
-                    time.sleep(10)
-                if self.config.getboolean('bot', 'require_shaman'):
-                    merge_series = adv_filter_keys(merge_series, units='demon_hunter.png', remove=True)
-            merge_series = preserve_unit(merge_series, target='trapper.png')
-            # Remove 4x cauldrons
-            for _ in range(4):
-                merge_series = preserve_unit(merge_series, target='cauldron.png', keep_min=True)
-            # Try to keep knight_statue numbers even (can conflict if special_merge already merged)
-            num_knight = sum(adv_filter_keys(merge_series, units='knight_statue.png'))
-            if num_knight % 2 == 1:
-                self.harley_merge(df_split, merge_series, target='knight_statue.png')
-            # Preserve 2 highest knight statues
-            for _ in range(2):
-                merge_series = preserve_unit(merge_series, target='knight_statue.png')
-            # Select stuff to merge
-            merge_series = merge_series[merge_series >= 2]  # At least 2 units
-            merge_series = adv_filter_keys(merge_series, ranks=7, remove=True)  # Remove max ranks
-            # Try to merge high priority units
-            merge_prio = adv_filter_keys(merge_series,
-                                        units=['chemist.png', 'bombardier.png', 'sword.png', 'summoner.png', 'trapper.png', 'knight_statue.png'])
-            if not merge_prio.empty:
-                info = 'Merging High Priority!'
-                merge_df = self.merge_unit(df_split, merge_prio)
-            # Merge if board is getting full. Runs well with 1 also.
-            if df_groups['empty.png'] <= 2:
-                info = 'Merging!'
-                # Add criteria
-                low_series = adv_filter_keys(merge_series, ranks=rank, remove=False)
-                if not low_series.empty:
-                    merge_df = self.merge_unit(df_split, low_series)
-                else:
-                    # If grid seems full, merge more units
-                    info = 'Merging high level!'
-                    merge_series = adv_filter_keys(merge_series,
-                                                ranks=[3, 4, 5, 6, 7],
-                                                units=['zealot.png', 'crystal.png', 'bruser.png', merge_target],
-                                                remove=True)
-                    if not merge_series.empty:
-                        merge_df = self.merge_unit(df_split, merge_series)
-            else:
-                info = 'need more units!'
-            return grid_df, unit_series, merge_series, merge_df, info
+        
+          ####### HARLEY/DRYAD #######
+          if 'harlequin.png' in self.selected_units and 'dryad.png' in self.selected_units:
+              # Do special merge with dryad/Harley
+              self.special_merge(df_split, merge_series, merge_target)
+
+
+          ####### DEMON HUNTER #######
+          if merge_target == 'demon_hunter.png':
+              # Use harley on DHs starting from rank 2
+              self.harley_merge(df_split, merge_series, target=merge_target)
+              # Keep all DHs on the board starting from rank 2
+              num_dh = sum(adv_filter_keys(merge_series, ranks=[2,3,4,5,6,7], units='demon_hunter.png'))
+              # Take a backup of the merge series before removing DH
+              merge_series_with_dh = merge_series
+              for i in range(num_dh):
+                  merge_series = preserve_unit(merge_series, target='demon_hunter.png', keep_min=False)
+
+              # Keep all demons on the board if teammate runs shaman deck
+              if self.config.getboolean('bot', 'require_shaman'):
+                  merge_series = adv_filter_keys(merge_series, units='demon_hunter.png', remove=True)
+
+          ####### TRAPPER #######
+          if 'trapper.png' in self.selected_units:
+              # Keep highest rank trapper
+              merge_series = preserve_unit(merge_series, target='trapper.png', keep_min=False)
+
+          ####### SCRAPPER #######
+          # Skip all of this if scrapper is not used
+          if 'scrapper.png' in self.selected_units:
+              selected_units_copy = self.selected_units.copy()
+              # Backup the merge series that has the scrapper we intend to save
+              # Need that one later so we can find a merge match from this backed up series
+              merge_series_with_scrapper = merge_series.copy()
+              # Keep lowest rank scrapper
+              merge_series = preserve_unit(merge_series, target='scrapper.png', keep_min=True)
+
+              # Start scrapping once we have enough high rank units of our merge_target on the board
+              # OR if our board is getting too full
+              num_merge_target = sum(adv_filter_keys(merge_series, ranks=[3,4,5,6,7], units=merge_target))
+              if (num_merge_target >= 6 or num_dh >= 6) and (df_groups['empty.png'] <= 1):
+                  # Remove merge_target from the selected_units to avoid scrapping it too early
+                  selected_units_copy.remove(merge_target)
+                  # Also remove scrapper ofcourse
+                  selected_units_copy.remove('scrapper.png')
+                  # Try to merge with any of the detected units
+                  self.scrapper_merge(df_split, merge_target, merge_series, merge_series_with_scrapper, target=selected_units_copy[0])
+                  self.scrapper_merge(df_split, merge_target, merge_series, merge_series_with_scrapper, target=selected_units_copy[1])
+                  self.scrapper_merge(df_split, merge_target, merge_series, merge_series_with_scrapper, target=selected_units_copy[2])
+                  # Try to scrap the merge target as a last resort
+                  self.scrapper_merge(df_split, merge_target, merge_series, merge_series_with_scrapper, target=merge_target)
+
+                  # If we get stuck with scrapping, specifically for DH we need to clear up some room on the board
+                  # Simplest way is to allow it to merge rank 2 DH's
+                  if merge_target == 'demon_hunter.png':
+                      if (df_groups['empty.png'] < 1):
+                          merge_series = merge_series_with_dh.copy()
+                          # Remove Scrapper again
+                          merge_series = preserve_unit(merge_series, target='scrapper.png', keep_min=True)
+                          # Keep all DHs on the board starting from rank 3
+                          num_dh = sum(adv_filter_keys(merge_series, ranks=[3,4,5,6,7], units='demon_hunter.png'))
+                          for i in range(num_dh):
+                              merge_series = preserve_unit(merge_series, target='demon_hunter.png', keep_min=False)
+
+
+
+          ####### CAULDRON #######
+          if 'cauldron.png' in self.selected_units:
+              # Remove 4x cauldrons
+              for _ in range(4):
+                  merge_series = preserve_unit(merge_series, target='cauldron.png', keep_min=True)
+
+          ####### KNIGHT STATUE #######
+          if 'knight_statue.png' in self.selected_units:
+              # Try to keep knight_statue numbers even (can conflict if special_merge already merged)
+              num_knight = sum(adv_filter_keys(merge_series, units='knight_statue.png'))
+              if num_knight % 2 == 1:
+                  self.harley_merge(df_split, merge_series, target='knight_statue.png')
+              # Preserve 2 highest knight statues
+              for _ in range(2):
+                  merge_series = preserve_unit(merge_series, target='knight_statue.png')
+          # Select stuff to merge
+          merge_series = merge_series[merge_series >= 2]  # At least 2 units
+          merge_series = adv_filter_keys(merge_series, ranks=7, remove=True)  # Remove max ranks
+          # Try to merge high priority units
+          merge_prio = adv_filter_keys(merge_series,
+                                       units=['chemist.png', 'bombardier.png', 'sword.png', 'summoner.png', 'trapper.png', 'knight_statue.png'])
+          if not merge_prio.empty:
+              info = 'Merging High Priority!'
+              merge_df = self.merge_unit(df_split, merge_prio)
+          # Merge if board is getting full. Runs well with 1 also.
+          if df_groups['empty.png'] <= 1:
+              info = 'Merging!'
+              # Add criteria
+              low_series = adv_filter_keys(merge_series, ranks=rank, remove=False)
+              if not low_series.empty:
+                  merge_df = self.merge_unit(df_split, low_series)
+              else:
+                  # If grid seems full, merge more units
+                  info = 'Merging high level!'
+                  merge_series = adv_filter_keys(merge_series,
+                                                 ranks=[3, 4, 5, 6, 7],
+                                                 units=['zealot.png', 'crystal.png', 'bruser.png', merge_target],
+                                                 remove=True)
+                  if not merge_series.empty:
+                      merge_df = self.merge_unit(df_split, merge_series)
+          else:
+              info = 'need more units!'
+          return grid_df, unit_series, merge_series, merge_df, info
 
     def block_merging(self):
         if hasattr(self, 'available_icons'):
