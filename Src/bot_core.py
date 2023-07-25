@@ -310,9 +310,9 @@ class Bot:
         else:
         
           ####### HARLEY/DRYAD #######
-          if 'harlequin.png' in self.selected_units and 'dryad.png' in self.selected_units:
-              # Do special merge with dryad/Harley
-              self.special_merge(df_split, merge_series, merge_target)
+          if 'harlequin.png' in self.selected_units or 'dryad.png' in self.selected_units:
+            # Do special merge with dryad/Harley
+            self.special_merge(df_split, merge_series, merge_target)
 
 
           ####### DEMON HUNTER #######
