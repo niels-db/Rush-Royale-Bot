@@ -3,6 +3,11 @@ Created by AxelBjork
 Updated and reworked by Jimm1432, niels-db
 
 *Change Log*
+1.18
+No merging when curse is detected
+No merging when bedlam spawned
+No card upgrading when Puppeteer spawned
+Added scrapper support
 1.17
 Added treasure map support
 Fixed scrpy zip extraction
