@@ -348,7 +348,7 @@ class Bot:
               # Start scrapping once we have enough high rank units of our merge_target on the board
               # OR if our board is getting too full
               num_merge_target = sum(adv_filter_keys(merge_series, ranks=[3,4,5,6,7], units=merge_target))
-              if (num_merge_target >= 6 or num_dh >= 6) and (df_groups['empty.png'] <= 1):
+              if (num_merge_target >= 6) and (df_groups['empty.png'] <= 1):
                   # Remove merge_target from the selected_units to avoid scrapping it too early
                   selected_units_copy.remove(merge_target)
                   # Also remove scrapper ofcourse
