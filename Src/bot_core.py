@@ -242,21 +242,42 @@ class Bot:
             self.logger.info(log_msg)
 
     # Find targets for special merge
-    def special_merge(self, df_split, merge_series, target='zealot.png'):
+    def special_merge(self, df_split, merge_series, df_groups, target='demon_hunter.png'):
         merge_df = None
         # Try to rank up dryads
         dryads_series = adv_filter_keys(merge_series, units='dryad.png')
         if not dryads_series.empty:
             dryads_rank = dryads_series.index.get_level_values('rank')
             for rank in dryads_rank:
-                merge_series_dryad = adv_filter_keys(merge_series, units=['harlequin.png', 'dryad.png'], ranks=rank)
-                merge_series_zealot = adv_filter_keys(merge_series, units=['dryad.png', target], ranks=rank)
-                if len(merge_series_dryad.index) == 2:
-                    merge_df = self.merge_special_unit(df_split, merge_series_dryad, special_type='harlequin.png')
+                # Count rank 1 Scrappers
+                rank1_scrappers = adv_filter_keys(merge_series, units='scrapper.png', ranks=1).sum()
+                # Existing logic for merging with harlequin /w dryad OR merging dryad /w target
+                merge_series_hq_dryad = adv_filter_keys(merge_series, units=['harlequin.png', 'dryad.png'], ranks=rank)
+                merge_series_dryad_target = adv_filter_keys(merge_series, units=['dryad.png', target], ranks=rank)
+                if len(merge_series_hq_dryad.index) == 2:
+                    merge_df = self.merge_special_unit(df_split, merge_series_hq_dryad, special_type='harlequin.png')
                     break
-                if len(merge_series_zealot.index) == 2:
-                    merge_df = self.merge_special_unit(df_split, merge_series_zealot, special_type='dryad.png')
+                if len(merge_series_dryad_target.index) == 2:
+                    merge_df = self.merge_special_unit(df_split, merge_series_dryad_target, special_type='dryad.png')
                     break
+            
+                # New logic for merging with any unit that has another unit on the board one rank higher
+                if df_groups['empty.png'] <= 1:  # You can adjust this condition
+                    same_rank_series = adv_filter_keys(merge_series, ranks=rank, units='dryad.png', remove=True)
+                    for unit_to_merge in same_rank_series.index.get_level_values('unit'):
+                        # Skip Scrapper if there is only one rank 1 Scrapper
+                        if unit_to_merge == 'scrapper.png' and rank1_scrappers < 2:
+                            continue
+
+                        if adv_filter_keys(merge_series, units=unit_to_merge, ranks=rank+1).sum() >= 1:
+                            merge_series_hq_dryad = adv_filter_keys(merge_series, units=['dryad.png', unit_to_merge], ranks=rank)
+                            if len(merge_series_hq_dryad.index) == 2:
+                                merge_df = self.merge_special_unit(df_split, merge_series_hq_dryad, special_type='dryad.png')
+                                break
+
+                    if merge_df is not None:  # Break the loop if a merge was successful
+                        break
+
         return merge_df
 
     # Harley Merge target
@@ -312,7 +333,7 @@ class Bot:
           ####### HARLEY/DRYAD #######
           if 'harlequin.png' in self.selected_units or 'dryad.png' in self.selected_units:
             # Do special merge with dryad/Harley
-            self.special_merge(df_split, merge_series, merge_target)
+            self.special_merge(df_split, merge_series, df_groups, merge_target)
 
 
           ####### DEMON HUNTER #######
