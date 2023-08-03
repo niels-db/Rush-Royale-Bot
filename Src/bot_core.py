@@ -428,7 +428,7 @@ class Bot:
                 return True
 
             # Don't merge if Bedlam has spawned
-            if 'bedlam.png' in df['icon'].values and 'bedlam_is_coming.png' not in df['icon'].values:
+            if 'bedlam.png' in df['icon'].values and 'bedlam_is_coming_pve.png' not in df['icon'].values and 'bedlam_is_coming_pvp.png' not in df['icon'].values:
                 self.logger.info(f'Bedlam spawned, not merging. Sleeping 10s')
                 time.sleep(10)
                 return True
@@ -440,7 +440,7 @@ class Bot:
         if hasattr(self, 'available_icons'):
             df = self.available_icons
             # Don't level cards if Puppeteer has spawned
-            if 'puppeteer.png' in df['icon'].values and 'puppeteer_is_coming.png' not in df['icon'].values:
+            if 'puppeteer.png' in df['icon'].values and 'puppeteer_is_coming_pve.png' not in df['icon'].values and 'puppeteer_is_coming_pvp.png' not in df['icon'].values:
                 self.logger.info(f'Puppeteer spawned, not upgrading cards. Sleeping 10s')
                 time.sleep(10)
             else:
