@@ -25,7 +25,7 @@ class RR_bot:
         self.root = create_base()
         self.frames = self.root.winfo_children()
         # Setup frame 1 (options)
-        self.ads_var, self.pve_var, self.shaman_var, self.treasure_map_green_var, self.treasure_map_gold_var, self.mana_vars, self.floor = create_options(self.frames[0], self.config)
+        self.ads_var, self.pve_var, self.clan_collect_var, self.clan_tournament_var, self.shaman_var, self.treasure_map_green_var, self.treasure_map_gold_var, self.mana_vars, self.shop_vars, self.floor = create_options(self.frames[0], self.config)
         # Setup frame 2 (combat info)
         self.grid_dump, self.unit_dump, self.merge_dump = create_combat_info(self.frames[1])
         ## rest need to be cleaned up
@@ -79,10 +79,15 @@ class RR_bot:
         floor_var = int(self.floor.get())
         card_level = [var.get() for var in self.mana_vars] * np.arange(1, 6)
         card_level = card_level[card_level != 0]
+        shop_item = [var.get() for var in self.shop_vars] * np.arange(1, 7)
+        shop_item = shop_item[shop_item != 0]
         self.config.read('config.ini')
         self.config['bot']['floor'] = str(floor_var)
         self.config['bot']['mana_level'] = np.array2string(card_level, separator=',')[1:-1]
+        self.config['bot']['shop_item'] = np.array2string(shop_item, separator=',')[1:-1]
         self.config['bot']['pve'] = str(bool(self.pve_var.get()))
+        self.config['bot']['clan_collect'] = str(bool(self.clan_collect_var.get()))
+        self.config['bot']['clan_tournament'] = str(bool(self.clan_tournament_var.get()))
         self.config['bot']['watch_ad'] = str(bool(self.ads_var.get()))
         self.config['bot']['require_shaman'] = str(bool(self.shaman_var.get()))
         self.config['bot']['treasure_map_green'] = str(bool(self.treasure_map_green_var.get()))
@@ -190,11 +195,21 @@ def create_options(frame1, config):
     if config.has_option('bot', 'treasure_map_gold'):
         user_treasure_map_gold = int(config.getboolean('bot', 'treasure_map_gold'))
     treasure_map_gold_var = IntVar(value=user_treasure_map_gold)
+    if config.has_option('bot', 'clan_tournament'):
+        user_clan_tournament = int(config.getboolean('bot', 'clan_tournament'))
+    clan_tournament_var = IntVar(value=user_clan_tournament)
+    if config.has_option('bot', 'clan_collect'):
+        user_clan_collect = int(config.getboolean('bot', 'clan_collect'))
+    clan_collect_var = IntVar(value=user_clan_collect)
     pve_check = Checkbutton(frame1, text='PvE', variable=pve_var, justify=LEFT).grid(row=0, column=1, sticky=W)
     ad_check = Checkbutton(frame1, text='ADs', variable=ads_var, justify=LEFT).grid(row=0, column=2, sticky=W)
-    shaman_check = Checkbutton(frame1, text='Req Shaman *Use in PvE ONLY*', variable=shaman_var, justify=LEFT).grid(row=0, column=3, sticky=W)
-    treasure_map_green_check = Checkbutton(frame1, text='Treasure map green', variable=treasure_map_green_var, justify=LEFT).grid(row=0, column=4, sticky=W)
-    treasure_map_gold_check = Checkbutton(frame1, text='Treasure map gold', variable=treasure_map_gold_var, justify=LEFT).grid(row=0, column=5, sticky=W)
+    treasure_map_green_check = Checkbutton(frame1, text='Treasure map green', variable=treasure_map_green_var, justify=LEFT).grid(row=0, column=3, sticky=W)
+    treasure_map_gold_check = Checkbutton(frame1, text='Treasure map gold', variable=treasure_map_gold_var, justify=LEFT).grid(row=0, column=4, sticky=W)
+    shaman_check = Checkbutton(frame1, text='Req Shaman *For PvE ONLY*', variable=shaman_var, justify=LEFT).grid(row=0, column=5, sticky=W)
+    # Clan options
+    label = Label(frame1, text="Clan options", justify=LEFT).grid(row=1, column=0, sticky=W)
+    clan_collect_check = Checkbutton(frame1, text='Collect', variable=clan_collect_var, justify=LEFT).grid(row=1, column=1, sticky=W)
+    clan_tournament_check = Checkbutton(frame1, text='Tourney', variable=clan_tournament_var, justify=LEFT).grid(row=1, column=2, sticky=W)
     # Mana level targets
     mana_label = Label(frame1, text="Mana Level Targets", justify=LEFT).grid(row=2, column=0, sticky=W)
     stored_values = np.fromstring(config['bot']['mana_level'], dtype=int, sep=',')
@@ -203,13 +218,21 @@ def create_options(frame1, config):
         Checkbutton(frame1, text=f'Card {i+1}', variable=mana_vars[i], justify=LEFT).grid(row=2, column=i + 1)
         for i in range(5)
     ]
+    # Shop item targets
+    shop_label = Label(frame1, text="Shop Item Targets", justify=LEFT).grid(row=3, column=0, sticky=W)
+    stored_values = np.fromstring(config['bot']['shop_item'], dtype=int, sep=',')
+    shop_vars = [IntVar(value=int(i in stored_values)) for i in range(1, 7)]
+    shop_buttons = [
+        Checkbutton(frame1, text=f'Shop {i+1}', variable=shop_vars[i], justify=LEFT).grid(row=3, column=i + 1)
+        for i in range(6)
+    ]
     # Dungeon Floor
-    floor_label = Label(frame1, text="Dungeon Floor", justify=LEFT).grid(row=3, column=0, sticky=W)
+    floor_label = Label(frame1, text="Dungeon Floor", justify=LEFT).grid(row=4, column=0, sticky=W)
     floor = Entry(frame1, name='floor_entry', width=5)
     if config.has_option('bot', 'floor'):
         floor.insert(0, config['bot']['floor'])
-    floor.grid(row=3, column=1)
-    return ads_var, pve_var, shaman_var, treasure_map_green_var, treasure_map_gold_var, mana_vars, floor
+    floor.grid(row=4, column=1)
+    return ads_var, pve_var, clan_collect_var, clan_tournament_var, shaman_var, treasure_map_green_var, treasure_map_gold_var, mana_vars, shop_vars, floor
 
 
 def create_combat_info(frame2):

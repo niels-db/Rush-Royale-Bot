@@ -52,4 +52,13 @@ Settings:
 
 * Run launch_gui.bat to start the bots GUI.
 
-* Units have to be configured in config.ini file first, Other settings are set by GUI. 
+* Units have to be configured in config.ini file first, Other settings are set by GUI.
+
+Check all_units folder to get correct unit names for setup.
+
+**Support me**
+Any donations would be appreciated so I can maintain and update this project. You can support me via
+
+Bitcoin 3Hc95fuKwoLgFUQzBzQrATDhEmU1VhY9Qg
+
+Eth 0x1C77F51eA41e2FD420F674203fA67a488874bD37
