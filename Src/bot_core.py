@@ -701,7 +701,6 @@ class Bot:
             self.click(700, 400)  # collect second completed quest
             [self.click(150, 250) for i in range(2)]  # click dailies twice
             self.click(420, 420)  # collect ad chest
-            [self.click(150, 250) for i in range(10)] # click continue for each item
         elif (avail_buttons == 'ad_season.png').any(axis=None):
             pos = get_button_pos(avail_buttons, 'ad_season.png')
             self.click_button(pos)
