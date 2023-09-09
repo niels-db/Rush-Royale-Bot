@@ -57,6 +57,7 @@ Settings:
 Check all_units folder to get correct unit names for setup.
 
 **Support me**
+
 Any donations would be appreciated so I can maintain and update this project. You can support me via
 
 Bitcoin 3Hc95fuKwoLgFUQzBzQrATDhEmU1VhY9Qg
