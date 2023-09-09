@@ -58,8 +58,8 @@ Check all_units folder to get correct unit names for setup.
 
 **Support me**
 
-Any donations would be appreciated so I can maintain and update this project. You can support me via
+Any donations would be appreciated it helps me maintain and update this project. You can support me via
 
-Bitcoin 3Hc95fuKwoLgFUQzBzQrATDhEmU1VhY9Qg
+* **Bitcoin** 3Hc95fuKwoLgFUQzBzQrATDhEmU1VhY9Qg
 
-Eth 0x1C77F51eA41e2FD420F674203fA67a488874bD37
+* **Ethereum** 0x1C77F51eA41e2FD420F674203fA67a488874bD37
