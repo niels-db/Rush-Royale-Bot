@@ -63,9 +63,6 @@ def start_bot_class(logger):
     bot = bot_core.Bot()
     return bot
 
-def create_unit_list(bot):
-    bot.selected_units = os.listdir("units")
-
 # Loop for combat actions
 def combat_loop(bot, combat, grid_df, mana_targets, user_target='demon_hunter.png'):  
     time.sleep(0.2)

@@ -19,7 +19,9 @@ class Bot:
 
     def __init__(self, device=None):
         self.bot_stop = False
-        self.selected_units = self.combat = self.output = self.grid_df = self.unit_series = self.merge_series = self.df_groups = self.info = self.combat_step = None
+        self.combat = self.output = self.grid_df = self.unit_series = self.merge_series = self.df_groups = self.info = self.combat_step = None
+        os.makedirs("units", exist_ok=True)
+        self.selected_units = os.listdir("units")
         self.logger = logging.getLogger('__main__')
         if device is None:
             device = port_scan.get_device()
