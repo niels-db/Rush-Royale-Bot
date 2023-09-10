@@ -586,6 +586,7 @@ class Bot:
             if (df == 'ad_fight_end.png').any(axis=None) and ((df == 'victory.png').any(axis=None)):
                 self.watch_ads()
             # Check first button is clickable
+            time.sleep(1)
             df_click = df[df['icon'].isin(['back_button.png', '0cont_button.png', 'close.png', 'item-drawer.png', 'battle_icon.png', '1quit.png',])]
             if not df_click.empty:
                 button_pos = df_click['pos [X,Y]'].tolist()[0]
@@ -662,8 +663,8 @@ class Bot:
                 avail_buttons = self.get_current_icons(available=True)
                 # Look for roulette ad button
                 if (avail_buttons == 'ad_roulette.png').any(axis=None):
-                    self.watch_ads()
                     self.logger.warning('Playing roulette!')
+                    self.watch_ads()
                     return
                 elif (avail_buttons == 'roulette_cooldown.png').any(axis=None):
                     self.logger.warning('Roulette not available...')
@@ -723,6 +724,7 @@ class Bot:
         else:
             self.logger.info('Watched all ads!')
             return
+        time.sleep(3)
         # Check if ad was started
         avail_buttons, status = self.battle_screen()
         if status == 'menu' or status == 'home' or (avail_buttons == 'refresh_button.png').any(axis=None):
