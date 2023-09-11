@@ -30,3 +30,5 @@ Minor fixes and improvements
     - general bot loop
     - fight logic
     - escaping UI elements
+1.20
+Added clan request support, choose unit from GUI

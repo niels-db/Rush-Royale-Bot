@@ -94,6 +94,8 @@ def bot_loop(bot, info_event):
     user_shaman = config.getboolean('require_shaman', False)
     user_clan_collect = config.getboolean('clan_collect', True)
     user_clan_tournament = config.getboolean('clan_tournament', True)
+    user_clan_request_epic = config['request_epic'] + '.png' if config['request_epic'] else ''
+    user_clan_request_common_rare = config['request_common_rare'] + '.png' if config['request_common_rare'] else ''
     user_floor = int(config.get('floor', 10))
     user_level = np.fromstring(config['mana_level'], dtype=int, sep=',')
     user_target = config['dps_unit'].split('.')[0] + '.png'
@@ -115,6 +117,7 @@ def bot_loop(bot, info_event):
     combat = 0
     watch_ad = False
     clan_collect = False
+    clan_request = False
     grid_df = None
     # Wait for login
     time.sleep(5)
@@ -130,6 +133,7 @@ def bot_loop(bot, info_event):
         if output[1] == 'fighting':
             watch_ad = user_ads
             clan_collect = user_clan_collect
+            clan_request = True if user_clan_request_epic or user_clan_request_common_rare else False
             wait = 0
             combat += 1
             if combat > max_loops:
@@ -161,7 +165,10 @@ def bot_loop(bot, info_event):
             if clan_collect:
                 bot.collect_clan_chat()
                 clan_collect = False
-            if (watch_ad == False) and (clan_collect == False):
+            if clan_request:
+                bot.request_clan_chat(user_clan_request_epic, user_clan_request_common_rare)
+                clan_request = False
+            if (watch_ad == False) and (clan_collect == False) and (clan_request == False):
                 output = bot.battle_screen(start=True, pve=user_pve, clan_tournament=user_clan_tournament, floor=user_floor)
         else:
             combat = 0

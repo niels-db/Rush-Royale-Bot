@@ -144,7 +144,7 @@ class Bot:
         return store_states_names[closest_state]
 
     # Check if any icons are on screen
-    def get_current_icons(self, new=True, available=False):
+    def get_current_icons(self, new=True, available=False, dir="icons"):
         current_icons = []
         # Update screen and load screenshot as grayscale
         if new:
@@ -152,11 +152,11 @@ class Bot:
         img_rgb = self.screenRGB
         img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
         # Check every target in dir
-        for target in os.listdir("icons"):
+        for target in os.listdir(dir):
             x = 0  # reset position
             y = 0
             # Load icon
-            imgSrc = f'icons/{target}'
+            imgSrc = f'{dir}/{target}'
             template = cv2.imread(imgSrc, 0)
             # Compare images
             res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
@@ -694,6 +694,49 @@ class Bot:
             elif (avail_buttons == 'collect_up.png').any(axis=None):
                 pos_collect_up = get_button_pos(avail_buttons, 'collect_up.png')
                 self.click_button(pos_collect_up)
+
+    def request_clan_chat(self, request_epic, request_common_rare):
+        self.click_button(np.array([650, 1515])) # click clan icon
+        time.sleep(1)
+        self.click_button(np.array([260, 70])) # click clan chat icon
+        time.sleep(1)
+        avail_buttons = self.get_current_icons(available=True)
+        if (avail_buttons == 'clan_request_button.png').any(axis=None):
+                pos = get_button_pos(avail_buttons, 'clan_request_button.png')
+                self.click_button(pos)
+                time.sleep(1)
+                avail_buttons = self.get_current_icons(available=True)
+                if not (avail_buttons == 'request.png').any(axis=None):
+                    self.click(10, 600)  # click menu away
+                    self.logger.warning('Request not available yet...')
+                    return
+                # Keep swiping until request unit is found
+                for i in range(6):
+                    # Scan screen for buttons
+                    time.sleep(1)
+                    if request_epic:
+                        avail_request_units = self.get_current_icons(available=True, dir="clan_request/epic")
+                        # Look for request unit
+                        if (avail_request_units == request_epic).any(axis=None):
+                            pos_unit = get_button_pos(avail_request_units, request_epic)
+                            self.click_button(pos_unit)
+                            pos_request = get_button_pos(avail_buttons, 'request.png')
+                            self.click_button(pos_request)
+                            self.logger.warning(f"Requested {request_epic.replace('.png', '')}")
+                            return
+                    if request_common_rare:
+                        avail_request_units = self.get_current_icons(available=True, dir="clan_request/common_rare")
+                        if (avail_request_units == request_common_rare).any(axis=None):
+                            pos_unit = get_button_pos(avail_request_units, request_common_rare)
+                            self.click_button(pos_unit)
+                            pos_request = get_button_pos(avail_buttons, 'request.png')
+                            self.click_button(pos_request)
+                            self.logger.warning(f"Requested {request_common_rare.replace('.png', '')}")
+                            return
+                    # Continue swiping to find requested unit
+                    [self.swipe([2, 0], [0, 0]) for i in range(2)]
+                    time.sleep(0.5)
+                    self.click(80, 600)  # stop scroll            
 
     def watch_ads(self):
         avail_buttons = self.get_current_icons(available=True)
