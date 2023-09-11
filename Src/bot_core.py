@@ -563,35 +563,37 @@ class Bot:
             # list of buttons
             if (df == 'fighting.png').any(axis=None) and not (df == '0cont_button.png').any(axis=None):
                 return df, 'fighting'
-            if (df == 'friend_menu.png').any(axis=None):
-                self.click_button(np.array([100, 600]))
-                return df, 'friend_menu'
-            # Start pvp if homescreen
-            if (df == 'home_screen.png').any(axis=None) and (df == 'battle_icon.png').any(axis=None):
-                # Play clan sandals
-                if clan_tournament and start:
-                    clan_tournament = self.play_clan_tournament()
-                # Start PvE
-                if pve and start and not clan_tournament:
-                    self.click_button(np.array([400, 1500])) # click home screen
-                    # Add a 500 pixel offset for PvE button
-                    self.click_button(np.array([640, 1259]))
-                    self.play_dungeon(floor=floor)
-                # Start PvP
-                elif start and not clan_tournament:
-                    self.click_button(np.array([140, 1259]))
+            else:
                 time.sleep(1)
-                return df, 'home'
-            # Watch ad at the end of a fight
-            if (df == 'ad_fight_end.png').any(axis=None) and ((df == 'victory.png').any(axis=None)):
-                self.watch_ads()
-            # Check first button is clickable
-            time.sleep(1)
-            df_click = df[df['icon'].isin(['back_button.png', '0cont_button.png', 'close.png', 'item-drawer.png', 'battle_icon.png', '1quit.png',])]
-            if not df_click.empty:
-                button_pos = df_click['pos [X,Y]'].tolist()[0]
-                self.click_button(button_pos)
-                return df, 'menu'
+                self.available_icons = self.get_current_icons(available=True)
+                df = self.available_icons
+                if (df == 'friend_menu.png').any(axis=None):
+                    self.click_button(np.array([100, 600]))
+                    return df, 'friend_menu'
+                # Start pvp if homescreen
+                if (df == 'home_screen.png').any(axis=None) and (df == 'battle_icon.png').any(axis=None):
+                    # Play clan sandals
+                    if clan_tournament and start:
+                        clan_tournament = self.play_clan_tournament()
+                    # Start PvE
+                    if pve and start and not clan_tournament:
+                        self.click_button(np.array([400, 1500])) # click home screen
+                        # Add a 500 pixel offset for PvE button
+                        self.click_button(np.array([640, 1259]))
+                        self.play_dungeon(floor=floor)
+                    # Start PvP
+                    elif start and not clan_tournament:
+                        self.click_button(np.array([140, 1259]))
+                    return df, 'home'
+                # Watch ad at the end of a fight
+                if (df == 'ad_fight_end.png').any(axis=None) and ((df == 'victory.png').any(axis=None)):
+                    self.watch_ads()
+                # Check first button is clickable
+                df_click = df[df['icon'].isin(['back_button.png', 'battle_icon.png', '0cont_button.png', '1quit.png', 'item-drawer.png'])]
+                if not df_click.empty:
+                    button_pos = df_click['pos [X,Y]'].tolist()[0]
+                    self.click_button(button_pos)
+                    return df, 'menu'
         self.shell(f'input keyevent {const.KEYCODE_BACK}')  #Force back
         return df, 'lost'
 
@@ -638,8 +640,8 @@ class Bot:
                         elif (avail_buttons == 'shop_coin_buy.png').any(axis=None):
                             pos_buy_button = get_button_pos(avail_buttons, 'shop_coin_buy.png')
                             self.click_button(pos_buy_button)
-                            self.logger.warning(f'Bought store unit {item}!')
-                            time.sleep(1)
+                            self.logger.warning(f'Bought store item {item}!')
+                            time.sleep(2)
                         self.click(10, 150)  # remove pop-up
                         time.sleep(0.5)
                 # Try to refresh shop (watch ad)
@@ -657,7 +659,6 @@ class Bot:
             [self.swipe([0, 0], [2, 0], menu_scrolling=True) for i in range(25)]
             self.click(10, 600, 5)  # stop scroll and scan screen for buttons
             # Keep swiping until roulette ad is found
-            expanded = 0
             for i in range(6):
                 # Scan screen for buttons
                 avail_buttons = self.get_current_icons(available=True)
@@ -667,7 +668,7 @@ class Bot:
                     self.watch_ads()
                     return
                 elif (avail_buttons == 'roulette_cooldown.png').any(axis=None):
-                    self.logger.warning('Roulette not available...')
+                    self.logger.warning('Roulette not available yet...')
                     return
                 # Continue swiping to find roulette ad button
                 [self.swipe([2, 0], [0, 0], menu_scrolling=True) for i in range(4)]
@@ -676,13 +677,15 @@ class Bot:
     def collect_clan_chat(self):
         self.click_button(np.array([650, 1515])) # click clan icon
         time.sleep(1)
-        self.click_button(np.array([260, 70])) # click tournament icon
+        self.click_button(np.array([260, 70])) # click clan chat icon
+        time.sleep(1)
+        self.click(810, 1220) # click scroll to bottom button
         time.sleep(1)
         avail_buttons = self.get_current_icons(available=True)
+        self.logger.warning(f'Collecting clan chat...')
         while (avail_buttons == 'collect.png').any(axis=None) or (avail_buttons == 'collect_up.png').any(axis=None):
             time.sleep(1)
             avail_buttons = self.get_current_icons(available=True)
-            self.logger.debug(f'collect buttons {avail_buttons}')
             if (avail_buttons == 'collect.png').any(axis=None):
                 pos_collect = get_button_pos(avail_buttons, 'collect.png')
                 self.click_button(pos_collect)

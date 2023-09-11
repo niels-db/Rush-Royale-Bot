@@ -161,7 +161,8 @@ def bot_loop(bot, info_event):
             if clan_collect:
                 bot.collect_clan_chat()
                 clan_collect = False
-            output = bot.battle_screen(start=True, pve=user_pve, clan_tournament=user_clan_tournament, floor=user_floor)
+            if (watch_ad == False) and (clan_collect == False):
+                output = bot.battle_screen(start=True, pve=user_pve, clan_tournament=user_clan_tournament, floor=user_floor)
         else:
             combat = 0
             bot.logger.info(f'{output[1]}, wait count: {wait}')
