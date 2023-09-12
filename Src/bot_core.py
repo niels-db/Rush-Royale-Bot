@@ -496,6 +496,7 @@ class Bot:
                     break
                 # Contiue swiping to find correct chapter
                 [self.swipe([2, 0], [0, 0]) for i in range(2)]
+                time.sleep(0.035)
                 self.click(30, 600)  # stop scroll
 
             # Click play floor if found
